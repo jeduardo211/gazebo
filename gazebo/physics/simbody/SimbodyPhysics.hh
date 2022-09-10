@@ -282,6 +282,10 @@ namespace gazebo
       ///   SimTK::RungeKutta2Integrator(system)
       ///   SimTK::SemiExplicitEuler2Integrator(system)
       private: std::string integratorType;
+
+      /// \brief Indicates if the forces must be automatically cleared before
+      /// the next step. Defaults to true.
+      private: bool autoResetForces;
     };
   /// \}
   }

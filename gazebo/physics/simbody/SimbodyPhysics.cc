@@ -86,6 +86,7 @@ SimbodyPhysics::SimbodyPhysics(WorldPtr _world)
       , contactStictionTransitionVelocity(0.0)
       , dynamicsWorld(nullptr)
       , stepTimeDouble(0.0)
+      , autoResetForces(true)
 {
   // Instantiate the Multibody System
   // Instantiate the Simbody Matter Subsystem
@@ -713,7 +714,10 @@ void SimbodyPhysics::UpdatePhysics()
 
   // FIXME:  this needs to happen before forces are applied for the next step
   // FIXME:  but after we've gotten everything from current state
-  this->discreteForces.clearAllForces(this->integ->updAdvancedState());
+  if (this->autoResetForces)
+  {
+    this->discreteForces.clearAllForces(this->integ->updAdvancedState());
+  }
   IGN_PROFILE_END();
 }
 
@@ -1652,6 +1656,10 @@ bool SimbodyPhysics::GetParam(const std::string &_key, boost::any &_value) const
   {
     _value = this->contact.getTransitionVelocity();
   }
+  else if (_key == "auto_reset_forces")
+  {
+    _value = this->autoResetForces;
+  }
   else
   {
     return PhysicsEngine::GetParam(_key, _value);
@@ -1710,6 +1718,10 @@ bool SimbodyPhysics::SetParam(const std::string &_key, const boost::any &_value)
     else if (_key == "override_stiction_transition_velocity")
     {
       this->contactImpactCaptureVelocity = any_cast<double>(_value);
+    }
+    else if (_key == "auto_reset_forces")
+    {
+      this->autoResetForces = any_cast<bool>(_value);
     }
     else
     {
